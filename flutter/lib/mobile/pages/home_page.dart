@@ -8,6 +8,7 @@ import '../../common/widgets/chat_page.dart';
 import '../../models/platform_model.dart';
 import '../../models/state_model.dart';
 import 'connection_page.dart';
+import 'ios_share_page.dart';
 
 abstract class PageShape extends Widget {
   final String title = "";
@@ -55,6 +56,9 @@ class HomePageState extends State<HomePage> {
     if (isAndroid && !bind.isOutgoingOnly()) {
       _chatPageTabIndex = _pages.length;
       _pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
+    }
+    if (isIOS && !bind.isOutgoingOnly()) {
+      _pages.add(IosSharePage());
     }
     _pages.add(SettingsPage());
   }
