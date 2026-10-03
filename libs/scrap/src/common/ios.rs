@@ -75,7 +75,7 @@ impl Capturer {
 impl crate::TraitCapturer for Capturer {
     fn frame<'a>(&'a mut self, _timeout: Duration) -> io::Result<Frame<'a>> {
         {
-            let mut latest = LATEST.lock().unwrap();
+            let latest = LATEST.lock().unwrap();
             // A size change is picked up by the display check, which recreates the capturer.
             if latest.seq == self.seq
                 || latest.width != self.width
@@ -83,8 +83,9 @@ impl crate::TraitCapturer for Capturer {
             {
                 return Err(io::ErrorKind::WouldBlock.into());
             }
-            // Swap instead of copy, the pusher refills our old buffer next time.
-            std::mem::swap(&mut self.data, &mut latest.data);
+            // Copied, not swapped: a capturer created later must still get the last frame.
+            self.data.clear();
+            self.data.extend_from_slice(&latest.data);
             self.stride = latest.stride;
             self.seq = latest.seq;
         }
