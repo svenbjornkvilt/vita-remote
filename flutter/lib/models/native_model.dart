@@ -178,7 +178,10 @@ class PlatformFFI {
           // The previous code was `_homeDir = (await getDownloadsDirectory())?.path ?? '';`,
           // which provided the `downloads` path in the sandbox.
           // It is unclear why we now use the `data` directory in the sandbox instead.
-          _homeDir = _ffiBind.mainGetDataDirIos(appDir: _dir);
+          // Shared with the broadcast extension, which runs the server.
+          final groupDir = await const MethodChannel('fo.vita.remote/broadcast')
+              .invokeMethod<String>('appGroupDir');
+          _homeDir = _ffiBind.mainGetDataDirIos(appDir: groupDir ?? _dir);
         } else {
           // no need to set home dir
         }
