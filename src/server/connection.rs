@@ -22,8 +22,10 @@ use crate::{
     },
     display_service, ipc, privacy_mode, video_service, VERSION,
 };
-#[cfg(any(target_os = "android", target_os = "ios"))]
+#[cfg(target_os = "android")]
 use crate::{common::DEVICE_NAME, flutter::connection_manager::start_channel};
+#[cfg(target_os = "ios")]
+use crate::{common::DEVICE_NAME, ios_broadcast::call_main_service_pointer_input};
 use cidr_utils::cidr::IpCidr;
 #[cfg(target_os = "android")]
 use hbb_common::protobuf::EnumOrUnknown;
@@ -50,7 +52,7 @@ use base::{
     fs::{self, can_enable_overwrite_detection, JobType},
     message_proto::{option_message::BoolOption, permission_info::Permission},
 };
-#[cfg(any(target_os = "android", target_os = "ios"))]
+#[cfg(target_os = "android")]
 use scrap::android::{call_main_service_key_event, call_main_service_pointer_input};
 use scrap::camera;
 use serde_derive::Serialize;
@@ -659,6 +661,17 @@ impl Connection {
             conn_audit_primary_auth: ConnAuditPrimaryAuth::None,
             conn_audit_two_factor: ConnAuditTwoFactor::None,
         };
+        // The iOS host is view only.
+        #[cfg(target_os = "ios")]
+        {
+            conn.keyboard = false;
+            conn.clipboard = false;
+            conn.audio = false;
+            conn.file = false;
+            conn.restart = false;
+            conn.block_input = false;
+            conn.privacy_mode = false;
+        }
         let addr = hbb_common::try_into_v4(addr);
         if !conn.on_open(addr).await {
             conn.closed = true;
@@ -668,6 +681,8 @@ impl Connection {
         }
         #[cfg(target_os = "android")]
         start_channel(rx_to_cm, tx_from_cm);
+        #[cfg(target_os = "ios")]
+        crate::ios_broadcast::start_headless_cm(rx_to_cm);
         #[cfg(target_os = "android")]
         conn.send_permission(Permission::Keyboard, conn.keyboard)
             .await;
@@ -1938,10 +1953,18 @@ impl Connection {
             ..Default::default()
         };
 
-        #[cfg(not(target_os = "android"))]
+        #[cfg(not(any(target_os = "android", target_os = "ios")))]
         {
             pi.hostname = crate::whoami_hostname();
             pi.platform = hbb_common::whoami::platform().to_string();
+        }
+        #[cfg(target_os = "ios")]
+        {
+            pi.hostname = DEVICE_NAME.lock().unwrap().clone();
+            if pi.hostname.is_empty() {
+                pi.hostname = "iPhone".into();
+            }
+            pi.platform = "iOS".into();
         }
         #[cfg(target_os = "android")]
         {

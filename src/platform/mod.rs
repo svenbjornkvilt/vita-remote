@@ -119,6 +119,20 @@ pub fn get_wakelock(_display: bool) -> WakeLock {
     return crate::platform::WakeLock::new(_display, true, false);
 }
 
+#[cfg(target_os = "ios")]
+pub fn get_active_username() -> String {
+    "ios".into()
+}
+
+// The broadcast extension cannot hold a wakelock; the system keeps it alive while sharing.
+#[cfg(target_os = "ios")]
+pub struct WakeLock;
+
+#[cfg(target_os = "ios")]
+pub fn get_wakelock(_display: bool) -> WakeLock {
+    WakeLock
+}
+
 #[cfg(any(target_os = "windows", target_os = "linux"))]
 pub(crate) struct InstallingService; // please use new
 

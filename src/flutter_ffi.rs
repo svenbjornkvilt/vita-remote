@@ -2152,6 +2152,13 @@ pub fn main_set_home_dir(_home: String) {
 // This is a temporary method to get data dir for ios
 pub fn main_get_data_dir_ios(app_dir: String) -> SyncReturn<String> {
     *config::APP_DIR.write().unwrap() = app_dir;
+    // The config may have been read before the dir was known; the broadcast extension shares it.
+    #[cfg(target_os = "ios")]
+    {
+        config::Config::reload();
+        // Persist the key pair now, so the app's later writes never store an empty one.
+        config::Config::get_key_pair();
+    }
     let data_dir = config::Config::path("data");
     if !data_dir.exists() {
         if let Err(e) = std::fs::create_dir_all(&data_dir) {
