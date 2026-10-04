@@ -1,7 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hbb/desktop/pages/desktop_home_page.dart'
-    show setPasswordDialog;
 
 import '../../common.dart';
 import '../../models/platform_model.dart';
@@ -29,54 +29,49 @@ class IosSharePage extends StatefulWidget implements PageShape {
 
 class _IosSharePageState extends State<IosSharePage> {
   String _id = '';
-  bool _passwordSet = false;
+  String _code = '';
 
   @override
   void initState() {
     super.initState();
-    _refresh();
+    bind.mainGetMyId().then((id) {
+      if (mounted) setState(() => _id = id);
+    });
   }
 
-  Future<void> _refresh() async {
-    final id = await bind.mainGetMyId();
-    final set = (await bind.mainGetCommon(key: "permanent-password-set")) ==
-        "true";
-    if (mounted) {
-      setState(() {
-        _id = id;
-        _passwordSet = set;
-      });
+  // The extension only runs while the customer is sharing, so a fresh code per
+  // session replaces a password they would otherwise have to make up.
+  Future<void> _start() async {
+    final rnd = Random.secure();
+    final code = List.generate(6, (_) => rnd.nextInt(10)).join();
+    if (!await bind.mainSetPermanentPasswordWithResult(password: code)) {
+      showToast(translate('Failed'));
+      return;
     }
+    setState(() => _code = code);
+    await iosBroadcastChannel.invokeMethod('start');
   }
 
-  String get _formattedId =>
-      _id.replaceAllMapped(RegExp(r'.{3}'), (m) => '${m[0]} ').trim();
+  String _group(String s) =>
+      s.replaceAllMapped(RegExp(r'.{3}'), (m) => '${m[0]} ').trim();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final big = theme.textTheme.headlineMedium
+        ?.copyWith(color: MyTheme.idColor, letterSpacing: 2);
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         Text(translate('ID'), style: theme.textTheme.titleMedium),
         const SizedBox(height: 4),
-        SelectableText(_formattedId,
-            style: theme.textTheme.headlineMedium
-                ?.copyWith(color: MyTheme.idColor, letterSpacing: 2)),
-        const SizedBox(height: 24),
-        Text(translate('Password'), style: theme.textTheme.titleMedium),
-        const SizedBox(height: 4),
-        Row(children: [
-          Expanded(
-            child: Text(_passwordSet
-                ? translate('Permanent password is set')
-                : translate('No password set')),
-          ),
-          TextButton(
-            onPressed: () => setPasswordDialog(notEmptyCallback: _refresh),
-            child: Text(translate('Set permanent password')),
-          ),
-        ]),
+        SelectableText(_group(_id), style: big),
+        if (_code.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(translate('Code'), style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          SelectableText(_group(_code), style: big),
+        ],
         const SizedBox(height: 32),
         FilledButton.icon(
           icon: const Icon(Icons.mobile_screen_share),
@@ -84,11 +79,16 @@ class _IosSharePageState extends State<IosSharePage> {
           style: FilledButton.styleFrom(
               backgroundColor: MyTheme.accent,
               minimumSize: const Size.fromHeight(52)),
-          onPressed: _passwordSet
-              ? () => iosBroadcastChannel.invokeMethod('start')
-              : null,
+          onPressed: _start,
         ),
         const SizedBox(height: 16),
+        Text(
+          translate(_code.isEmpty
+              ? 'Tap Start sharing, then read the ID and code to VITA.'
+              : 'Read the ID and code to VITA. You get a new code each time you start sharing.'),
+          style: theme.textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
         Text(
           translate('VITA can see your screen while sharing is on, but cannot control it. Stop sharing from the red bar or Control Centre.'),
           style: theme.textTheme.bodySmall,
