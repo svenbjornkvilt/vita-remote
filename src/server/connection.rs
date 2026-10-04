@@ -682,7 +682,7 @@ impl Connection {
         #[cfg(target_os = "android")]
         start_channel(rx_to_cm, tx_from_cm);
         #[cfg(target_os = "ios")]
-        crate::ios_broadcast::start_headless_cm(rx_to_cm);
+        crate::ios_broadcast::start_headless_cm(rx_to_cm, tx_from_cm);
         #[cfg(target_os = "android")]
         conn.send_permission(Permission::Keyboard, conn.keyboard)
             .await;

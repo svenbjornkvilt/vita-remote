@@ -6,7 +6,7 @@ use hbb_common::{
     log,
     tokio::{
         self,
-        sync::{mpsc::UnboundedReceiver, oneshot},
+        sync::{mpsc::{UnboundedReceiver, UnboundedSender}, oneshot},
     },
     ResultType,
 };
@@ -101,9 +101,22 @@ pub extern "C" fn vita_broadcast_stop() {
     scrap::clear_frames();
 }
 
-// No UI in the extension: password logins need no answer from a connection manager.
-pub(crate) fn start_headless_cm(mut rx: UnboundedReceiver<crate::ipc::Data>) {
-    tokio::spawn(async move { while rx.recv().await.is_some() {} });
+// No UI in the extension. The customer starting a broadcast is their consent, so
+// logins without a password are approved straight away.
+pub(crate) fn start_headless_cm(
+    mut rx: UnboundedReceiver<crate::ipc::Data>,
+    tx: UnboundedSender<crate::ipc::Data>,
+) {
+    tokio::spawn(async move {
+        while let Some(data) = rx.recv().await {
+            if let crate::ipc::Data::Login {
+                authorized: false, ..
+            } = data
+            {
+                tx.send(crate::ipc::Data::Authorize).ok();
+            }
+        }
+    });
 }
 
 // View only: remote input is dropped.
