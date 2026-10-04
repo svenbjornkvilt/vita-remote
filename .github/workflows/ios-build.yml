@@ -1,9 +1,7 @@
-name: iOS build
+name: iOS TestFlight
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ios-share]
 
 permissions:
   contents: read

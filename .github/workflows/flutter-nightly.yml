@@ -14,3 +14,24 @@ jobs:
     with:
       upload-artifact: true
       upload-tag: "nightly"
+
+  # Upstream build steps name files "rustdesk-*"; rename them once uploaded.
+  rename-assets:
+    needs: run-flutter-nightly-build
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Rename release files
+        run: |
+          assets=$(gh api "repos/$REPO/releases/tags/nightly" --jq '.assets[] | "\(.id) \(.name)"')
+          echo "$assets" | while read -r id name; do
+            new=$(echo "$name" | sed -E 's/^rustdesk/vita-remote/; s/-(aarch64|x86_64)-\1\./-\1./')
+            [ "$new" = "$name" ] && continue
+            old=$(echo "$assets" | awk -v n="$new" '$2==n {print $1}')
+            [ -n "$old" ] && gh api -X DELETE "repos/$REPO/releases/assets/$old"
+            gh api -X PATCH "repos/$REPO/releases/assets/$id" -f name="$new" >/dev/null && echo "$name -> $new"
+          done
+
