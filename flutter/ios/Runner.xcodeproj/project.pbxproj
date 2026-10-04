@@ -486,6 +486,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = N33LHF6RV3;
 				ENABLE_BITCODE = NO;
@@ -559,6 +561,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fo.vita.remote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "VITA Remote AppStore fo.vita.remote";
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -572,6 +575,8 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = VITABroadcast/VITABroadcast.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = N33LHF6RV3;
 				ENABLE_BITCODE = NO;
@@ -618,6 +623,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fo.vita.remote.broadcast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "VITA Remote AppStore fo.vita.remote.broadcast";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_STYLE = "non-global";
@@ -695,6 +701,8 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = VITABroadcast/VITABroadcast.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = N33LHF6RV3;
 				ENABLE_BITCODE = NO;
@@ -741,6 +749,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fo.vita.remote.broadcast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "VITA Remote AppStore fo.vita.remote.broadcast";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRIP_STYLE = "non-global";
@@ -955,6 +964,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = N33LHF6RV3;
 				ENABLE_BITCODE = NO;
@@ -1028,6 +1039,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = fo.vita.remote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "VITA Remote AppStore fo.vita.remote";
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
