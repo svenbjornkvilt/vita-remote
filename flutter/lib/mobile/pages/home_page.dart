@@ -154,7 +154,8 @@ class HomePageState extends State<HomePage> {
         ],
       );
     }
-    return Text(bind.mainGetAppNameSync());
+    // APP_NAME has no space because it is used in paths and URL schemes.
+    return const Text('VITA Remote');
   }
 }
 

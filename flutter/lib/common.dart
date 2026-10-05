@@ -378,6 +378,7 @@ class MyTheme {
     dialogBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
+      backgroundColor: Color(0xFF0B1A2E),
     ),
     dialogTheme: DialogTheme(
       elevation: 15,
@@ -476,6 +477,7 @@ class MyTheme {
     dialogBackgroundColor: Color(0xFF18191E),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
+      backgroundColor: Color(0xFF0B1A2E),
     ),
     dialogTheme: DialogTheme(
       elevation: 15,
