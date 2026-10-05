@@ -28,7 +28,7 @@ jobs:
         run: |
           assets=$(gh api "repos/$REPO/releases/tags/nightly" --jq '.assets[] | "\(.id) \(.name)"')
           echo "$assets" | while read -r id name; do
-            new=$(echo "$name" | sed -E 's/^rustdesk/vita-remote/; s/-(aarch64|x86_64)-\1\./-\1./')
+            new=$(echo "$name" | sed -E 's/^rustdesk-([0-9][0-9.]*-)?/vita-remote-/; s/-(aarch64|x86_64)-\1\./-\1./')
             [ "$new" = "$name" ] && continue
             old=$(echo "$assets" | awk -v n="$new" '$2==n {print $1}')
             [ -n "$old" ] && gh api -X DELETE "repos/$REPO/releases/assets/$old"
